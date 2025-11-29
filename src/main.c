@@ -8,12 +8,7 @@
 // e.g.:
 //    `make run day=3`
 int main(int argc, char **argv) {
-    printf("\nAdvent of Code 2022!\n==========");
-
-    printf("\n\n --- Debug ---");
-    printf("\n - (  %d  )", argc);
-    printf("\n - (  %s  )", argv[0]);
-    printf("\n - (  %s  )\n\n", argv[1]);
+    printf("\nAdvent of Code 2025!\n==========");
    
     int day = atoi(argv[1]);
 
