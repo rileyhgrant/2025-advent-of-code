@@ -15,10 +15,9 @@ int compare( const void* a, const void* b) {
 
 int day01() 
 {
-    printf("\nAdvent of Code 2022!\n==========");
     printf("\n\nDay 01: \n-----");
 
-    fptr = fopen("./input/day01/input.txt", "r");
+    fptr = fopen("./input/day01.txt", "r");
 
     int size = 200;
     char buff[size];
