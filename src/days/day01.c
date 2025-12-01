@@ -2,55 +2,46 @@
 #include <stdlib.h>
 FILE *fptr;
 
-
-int compare( const void* a, const void* b) {
-    int int_a = * ( (int*) a );
-    int int_b = * ( (int*) b );
-
-    if ( int_a == int_b ) return 0;
-    else if ( int_a < int_b ) return -1;
-    else return 1;
-}
-
-
 int day01() 
 {
-    printf("\n\nDay 01: \n-----");
+    int size = 30;
+    char buff[size];
 
     fptr = fopen("./input/day01.txt", "r");
 
-    int size = 200;
-    char buff[size];
-
-    int curr;
-    curr = 0;
-
-    int max[4];
-    max[0] = 0;
-    max[1] = 0;
-    max[2] = 0;
-    max[3] = 0;
+    int zeroes = 0;
+    int curr = 50;
 
     while (fgets(buff, size, fptr)) {
-        if (buff[0] == '\n') {
-            max[0] = curr;
-            qsort(max, 4, sizeof(int), compare);
-            max[0] = 0;
-            curr = 0;
-        } else {
-            int line = atoi(buff);
-            curr += line;
+        char dir = buff[0];
+        int num = atoi(buff + 1);
+
+        if (dir == 'L') {
+            curr = curr - num;
+            if (curr < 0) {
+                curr = curr % 100;
+                curr = curr + 100;
+            }
+            printf("\nRotated L%d to %d", num, curr);
+        } else if (buff[0] == 'R') {
+            curr = curr + num;
+            if (curr > 99) {
+                curr = curr % 100;
+            }
+            printf("\nRotated R%d to %d", num, curr);
         }
-    };
+
+        if (curr == 0 || curr == 100) {
+            printf("  <-- incrementing!");
+            zeroes = zeroes + 1;
+        }
+
+    }
 
     fclose(fptr);
 
-    printf("\n  Part 1: %d", max[3]);
+    printf("\n\nDay 01: \n-----");
+    printf("\n  Part 1: %d", zeroes); // 1071 correct
 
-    int part_2;
-    part_2 = max[1] + max[2] + max[3];
-    printf("\n  Part 2: %d", part_2);
-
-    printf("\n\n");
     return 0;
 }
