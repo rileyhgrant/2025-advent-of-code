@@ -1,8 +1,6 @@
 # 2025-advent-of-code
 My solutions to [Advent of Code](https://adventofcode.com) (AoC) 2025 in C
 
-* Note, to set up this repo ahead of the 2025 event, the current files solve problems from [2022](https://adventofcode.com/2022).
-
 ## Requirements
 
 - [make](https://www.gnu.org/software/make/)
@@ -31,6 +29,6 @@ Advent of Code 2025!
 
 Day 01:
 -----
-  Part 1: 66719
-  Part 2: 198551
+  Part 1: 1071
+  Part 2: 6700
 ```
