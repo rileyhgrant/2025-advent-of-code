@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+
 #include "day01.h"
+#include "day02.h"
 
 
 // Run with make run day=<DAY>
@@ -14,6 +17,7 @@ int main(int argc, char **argv) {
 
     switch(day) {
         case 1: day01(); break;
+        case 2: day02(); break;
         default: printf("Day %d not found", day); break;
     }   
 }
