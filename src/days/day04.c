@@ -15,7 +15,7 @@ void print_grid(int rows, int cols, char grid[rows][cols]) {
     }
 }
 
-bool can_be_moved(int rows, int cols, char grid[rows][cols], int i, int j) {
+bool can_be_removed(int rows, int cols, char grid[rows][cols], int i, int j) {
     if (grid[i][j] == '_' || grid[i][j] == '.') {
         return false;
     } 
@@ -40,6 +40,20 @@ bool can_be_moved(int rows, int cols, char grid[rows][cols], int i, int j) {
     }
 
     return count < 4;
+}
+
+int remove_rolls(int rows, int cols, char grid[rows][cols]) {
+    int removed = 0;
+    for(int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (can_be_removed(rows, cols, grid, i, j)) {
+                grid[i][j] = '.';
+                removed += 1;
+            }
+        }
+    }
+
+    return removed;
 }
 
 
@@ -86,22 +100,35 @@ int day04() {
         }
     }
 
+    // Part 1
+    // ---
     long long part1 = 0;
     for(int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            if (can_be_moved(rows, cols, grid, i, j)) {
+            if (can_be_removed(rows, cols, grid, i, j)) {
                 part1 += 1;
             }
         }
     }
 
+    // Part 2
+    // ---
+    long long part2 = 0;
+    while (true) {
+        int removed = remove_rolls(rows, cols, grid);
+        if (removed == 0) {
+            break;
+        }
+        part2 += removed;
+    }
+
+
+
     printf("\n\nDay 04: \n-----");
     printf("\n  Part 1: %lld", part1); // 1502 correct 
-    // printf("\n  Part 2: %lld", (long long)-1);
+    printf("\n  Part 2: %lld", part2); // 9083 correct
     printf("\n");
 
     return 0;
 }
-
-
 
