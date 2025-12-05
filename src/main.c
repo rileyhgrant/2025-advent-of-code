@@ -7,6 +7,7 @@
 #include "day02.h"
 #include "day03.h"
 #include "day04.h"
+#include "day05.h"
 
 
 // Run with make run day=<DAY>
@@ -22,6 +23,7 @@ int main(int argc, char **argv) {
         case 2: day02(); break;
         case 3: day03(); break;
         case 4: day04(); break;
+        case 5: day05(); break;
         default: printf("Day %d not found", day); break;
     }   
 }
