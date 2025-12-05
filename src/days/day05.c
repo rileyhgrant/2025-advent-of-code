@@ -15,6 +15,20 @@ bool is_valid_ingredient(long long ingredient, int array_size, long long array[a
     return false;
 }
 
+int compare_flat_pairs_by_start(const void *a, const void *b) {
+    const long long *startA = (const long long *)a;
+    const long long *startB = (const long long *)b;
+
+    if (*startA > *startB) {
+        return 1;
+    }
+    if (*startA < *startB) {
+        return -1;
+    }
+    
+    return 0;
+}
+
 int day05() {
     int line_len = 500;
     char buffer[line_len];
@@ -49,6 +63,8 @@ int day05() {
         index += 2;
     }
 
+    // Part 1
+    // ---
     long long part1 = 0;
     while(fgets(buffer, line_len, fptr)) {
         buffer[strcspn(buffer, "\n")] = '\0';
@@ -59,11 +75,72 @@ int day05() {
         }
     }
 
+    // Part 2 
+    // ---
+    long long part2 = 0;
+    while(true) {
+        size_t element_size = sizeof(long long) * 2;
+        qsort(ranges, array_len / 2, element_size, compare_flat_pairs_by_start);
+
+        bool shrunk = false;
+        for(int i = 0; i < array_len; i+=2) {
+            long long first = ranges[i];
+            long long second = ranges[i + 1];
+
+            if (first == -1 && second == -1) {
+                // pass
+            } else {
+                for(int j = 0; j < i; j+=2) {
+                    long long first2 = ranges[j];
+                    long long second2 = ranges[j + 1];
+
+                    if (first2 == -1 && second2 == -1) {
+                        // pass
+                    } else {
+                        if(first >= first2 && first <= second2 + 1) {
+                            if (second >= second2) {
+                                ranges[j + 1] = second;
+                            }
+                            ranges[i] = -1;
+                            ranges[i + 1] = -1;
+                            shrunk = true;
+                        } else if (second >= first2 - 1 && second <= second2) {
+                            if (first <= first2) {
+                                ranges[j] = first;
+                            }
+                            ranges[i] = -1;
+                            ranges[i + 1] = -1;
+                            shrunk = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!shrunk) {
+            break;
+        }
+    }
+
+    for(int i = 0; i < array_len; i+=2) {
+        long long first = ranges[i];
+        long long second = ranges[i + 1];
+
+        if (first == -1 && second == -1) {
+            // pass
+        } else {
+            long long to_add = (second - first) + 1;
+            part2 += to_add;
+        }
+
+    }
+
+
     fclose(fptr);
 
     printf("\n\nDay 02: \n-----");
     printf("\n  Part 1: %lld", part1);  // 613 correct
-    // printf("\n  Part 2: %lld", (long long)-1); 
+    printf("\n  Part 2: %lld", part2);  // 336495597913098 correct
     printf("\n");
 
     return 0;
