@@ -18,15 +18,17 @@ int day06() {
     char buffer[line_len];
 
     char* input_path = "./input/day06.txt";
+    // char* input_path = "./input/day06_test.txt";
     fptr = fopen(input_path, "r");
 
+    int line_chars;
     int rows = 0;
     int cols;
     char* token;
     while(fgets(buffer, line_len, fptr)) {
         cols = 0;
         buffer[strcspn(buffer, "\n")] = '\0';
-
+        line_chars = strlen(buffer);
         char* innerPtr;
         token = strtok_r(buffer, " ", &innerPtr);
         while(token != NULL) {
@@ -88,17 +90,66 @@ int day06() {
         part1 += curr;
     }
 
+    // Part 2
+    rewind(fptr);
+    long long part2 = 0;
 
+    char* array[rows];
+    int i = 0;
+    while(i < rows && fgets(buffer, line_len, fptr)) {
+        buffer[strcspn(buffer, "\n")] = '\0';
+        array[i] = strdup(buffer);
+        if (array[i] == NULL) {
+            perror("\nPanic! Couldn't allocate memory");
+            return 1;
+        }
+        i++;
+    }
+
+    long long vals[rows - 1];
+    int index = 0;
+    for(int col = line_chars; col >= 0; col--) {
+        long long curr_val = -1;
+        for(int row = 0; row < rows; row++) {
+            if (row == rows - 1 && curr_val > 0) {
+                vals[index] = curr_val;
+                index++;
+            }
+            char v = array[row][col];
+            if (v == '+') {
+                long long this_sum = 0;
+                for(int m = 0; m < index; m++) {
+                    this_sum = add(this_sum, vals[m]);
+                }
+                part2 += this_sum;
+                index = 0;
+            } else if (v == '*') { 
+                long long this_prod = 1;
+                for(int m = 0; m < index; m++) {
+                    this_prod = multiply(this_prod, vals[m]);
+                }
+                part2 += this_prod;
+                index = 0;
+            } else if (v == ' ' || v == '\0') {
+                // PASS no value 
+            } else {
+                long long digit = (long long)v - '0';
+                if (curr_val == -1) {
+                    curr_val = digit;
+                } else {
+                    curr_val = (curr_val * 10) + digit;
+                }
+            }
+        }
+    }
 
     fclose(fptr);
 
     printf("\n\nDay 02: \n-----");
-    printf("\n  Part 1: %lld", part1);  // 
-    printf("\n  Part 2: %lld", -1LL); 
+    printf("\n  Part 1: %lld", part1);  // 5784380717354 correct
+    printf("\n  Part 2: %lld", part2);  // 7996218225744 correct
     printf("\n");
 
     return 0;
 }
-
-
 
