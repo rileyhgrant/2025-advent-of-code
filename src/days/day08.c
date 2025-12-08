@@ -118,7 +118,35 @@ int day08() {
     size_t element_size = sizeof(KeyValuePair);
     qsort(data_table, size, element_size, compare_data_rows);
 
-    for(int k = 0; k < iters * 2; k++) {
+    int k = 0;
+    long long part1;
+
+    int num_dashes = 0;
+    long long part2;
+
+    while(true) {
+        if(k == iters * 2) {
+            int nums[4];
+            nums[0] = 1;
+            nums[1] = 1;
+            nums[2] = 1;
+            nums[3] = 1;
+
+            for(int i = 0; i < rows; i++) {
+                int count = 1;
+                for(int n = 0; circuits[i][n] != '\0'; n++) {
+                    if(circuits[i][n] == '&') {
+                        count++;
+                    }
+                }
+                nums[0] = count;
+                qsort(nums, 4, sizeof(int), compare_int); 
+            }
+
+            part1 = (long long)(nums[1] * nums[2] * nums[3]);
+        }
+
+
         KeyValuePair kvp = data_table[k];
 
         char* innerPtr2;
@@ -161,32 +189,27 @@ int day08() {
 
             circuits[first_in] = new_first;
             circuits[second_in] = "-";
+            num_dashes++;
         }
+
+        if (num_dashes == rows - 1) {
+            char* firstPtr;
+            char* secondPtr;
+            long long firstx = atoll(strtok_r(first, ",", &firstPtr));
+            long long secondx = atoll(strtok_r(second, ",", &secondPtr));
+
+            part2 = firstx * secondx;
+            break;
+        }
+
+        k++;
     }
 
-    int nums[4];
-    nums[0] = 1;
-    nums[1] = 1;
-    nums[2] = 1;
-    nums[3] = 1;
-
-    for(int i = 0; i < rows; i++) {
-        int count = 1;
-        for(int n = 0; circuits[i][n] != '\0'; n++) {
-            if(circuits[i][n] == '&') {
-                count++;
-            }
-        }
-        nums[0] = count;
-        qsort(nums, 4, sizeof(int), compare_int); 
-    }
-
-    long long part1 = (long long)(nums[1] * nums[2] * nums[3]);
     fclose(fptr);
 
     printf("\n\nDay 08: \n-----");
     printf("\n  Part 1: %lld", part1); // 175500 - correct
-    printf("\n  Part 2: %lld", -1LL);  
+    printf("\n  Part 2: %lld", part2); // 6934702555 - correct 
     printf("\n");
 
     return 0;
