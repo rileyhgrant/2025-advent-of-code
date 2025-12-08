@@ -8,6 +8,9 @@ all: $(TARGET)
 $(TARGET): $(SRCS)
 	$(CC) $(CFLAGS) $(SRCS) -o $@
 
+asan: CFLAGS += -fsanitize=address -g -fno-omit-frame-pointer
+asan: clean $(TARGET)
+
 run: $(TARGET)
 	./$(TARGET) $(day)
 
