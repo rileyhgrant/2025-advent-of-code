@@ -13,15 +13,10 @@
 #include "day08.h"
 #include "day09.h"
 
+#define TOTAL_DAYS 9
 
-// Run with make run day=<DAY>
-// e.g.:
-//    `make run day=3`
-int main(int argc, char **argv) {
-    printf("\nAdvent of Code 2025!\n==========");
-   
-    int day = atoi(argv[1]);
-
+void run_day(int day) {
+    printf("\n\n=== Day %02d ===", day);
     switch(day) {
         case 1: day01(); break;
         case 2: day02(); break;
@@ -33,5 +28,32 @@ int main(int argc, char **argv) {
         case 8: day08(); break;
         case 9: day09(); break;
         default: printf("Day %d not found", day); break;
-    }   
+    }
+}
+
+
+// Run with make run day=<DAY>
+// e.g.:
+//    `make run day=3`
+int main(int argc, char **argv) {
+    printf("\n\n====================");
+    printf(  "\nAdvent of Code 2025!");
+
+    if (argc < 2) {
+        printf("Usage: make run day=<NUMBER | all>\n");
+        return 1;
+    }
+   
+    char* day = argv[1];
+    if (strcmp(day, "all") == 0) {
+        for (int i = 1; i <= TOTAL_DAYS; i++) {
+            run_day(i);
+        }
+    } else {
+        int day_int = atoi(day);
+        run_day(day_int);
+    }
+    printf("\n\n");
+
+    return 0;
 }

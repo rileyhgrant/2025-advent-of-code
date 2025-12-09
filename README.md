@@ -20,15 +20,45 @@ Place your input(s) in that directory, with the same naming convention to have t
 Run `make run` from the command line with an argument for the day you wish to solve, e.g.
 
 ```
-❯ make run day=1
+$ make run day=5
 ```
 
 ```
+====================
 Advent of Code 2025!
-==========
 
-Day 01:
------
-  Part 1: 1071
-  Part 2: 6700
+=== Day 05 ===
+ -- Part 1: 613
+ -- Part 2: 336495597913098
+```
+
+Run with `day=all` to solve every day so far, e.g.
+
+```
+$ make run day=all
+```
+
+```
+====================
+Advent of Code 2025!
+
+=== Day 01 ===
+ -- Part 1: 1071
+ -- Part 2: 6700
+
+=== Day 02 ===
+ -- Part 1: 19128774598
+ -- Part 2: 21932258645
+
+=== Day 03 ===
+ -- Part 1: 17359
+ -- Part 2: 172787336861064
+
+=== Day 04 ===
+ -- Part 1: 1502
+ -- Part 2: 9083
+
+=== Day 05 ===
+ -- Part 1: 613
+ -- Part 2: 336495597913098
 ```

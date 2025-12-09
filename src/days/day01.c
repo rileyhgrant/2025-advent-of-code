@@ -63,10 +63,7 @@ int day01()
     }
 
     fclose(fptr);
-
-    printf("\n\nDay 01: \n-----");
-    printf("\n  Part 1: %d", zeroes); // 1071 correct
-    printf("\n  Part 2: %d\n", zeroes + parttwo); // 6700 correct
-
+    printf("\n -- Part 1: %d", zeroes); // 1071 correct
+    printf("\n -- Part 2: %d", zeroes + parttwo); // 6700 correct
     return 0;
 }
