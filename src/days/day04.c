@@ -1,38 +1,39 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 FILE *fptr;
 
-
-void print_grid(int rows, int cols, char grid[rows][cols]) {
+void print_grid(int rows, int cols, char grid[rows][cols])
+{
     printf("\n");
-    for(int i = 0; i < rows; i++) {
+    for (int i = 0; i < rows; i++) {
         printf("\n");
-        for(int j = 0; j < cols; j++) {
+        for (int j = 0; j < cols; j++) {
             printf("%c", grid[i][j]);
         }
     }
 }
 
-bool can_be_removed(int rows, int cols, char grid[rows][cols], int i, int j) {
+bool can_be_removed(int rows, int cols, char grid[rows][cols], int i, int j)
+{
     if (grid[i][j] == '_' || grid[i][j] == '.') {
         return false;
-    } 
+    }
 
     int count = 0;
     int r;
     int c;
     char ch;
-    for(int m = -1; m < 2; m++) {
-        for(int n = -1; n < 2; n++) {
+    for (int m = -1; m < 2; m++) {
+        for (int n = -1; n < 2; n++) {
             r = i - m;
             c = j - n;
-            if(m == 0 && n == 0) {
+            if (m == 0 && n == 0) {
                 // pass
             } else {
                 ch = grid[r][c];
-                if(ch == '@') {
+                if (ch == '@') {
                     count++;
                 }
             }
@@ -42,9 +43,10 @@ bool can_be_removed(int rows, int cols, char grid[rows][cols], int i, int j) {
     return count < 4;
 }
 
-int remove_rolls(int rows, int cols, char grid[rows][cols]) {
+int remove_rolls(int rows, int cols, char grid[rows][cols])
+{
     int removed = 0;
-    for(int i = 0; i < rows; i++) {
+    for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             if (can_be_removed(rows, cols, grid, i, j)) {
                 grid[i][j] = '.';
@@ -56,12 +58,12 @@ int remove_rolls(int rows, int cols, char grid[rows][cols]) {
     return removed;
 }
 
-
-int day04() {
+int day04()
+{
     int line_size = 500;
     char buffer[line_size];
 
-    char* input_path = "./input/day04.txt";
+    char *input_path = "./input/day04.txt";
 
     fptr = fopen(input_path, "r");
 
@@ -70,7 +72,7 @@ int day04() {
     int border = 1;
     char border_char = '_';
 
-    while(fgets(buffer, line_size, fptr)) {
+    while (fgets(buffer, line_size, fptr)) {
         buffer[strcspn(buffer, "\n")] = '\0';
         cols = strlen(buffer);
         rows += 1;
@@ -82,14 +84,14 @@ int day04() {
     char grid[rows][cols];
 
     rewind(fptr);
-    for(int i = 0; i < rows; i++) {
-        if(!(i < border || i >= rows - border)) {
+    for (int i = 0; i < rows; i++) {
+        if (!(i < border || i >= rows - border)) {
             fgets(buffer, line_size, fptr);
         }
         int k = 0;
 
-        for(int j = 0; j < cols; j++) {
-            if(i < border || i >= rows - border) {
+        for (int j = 0; j < cols; j++) {
+            if (i < border || i >= rows - border) {
                 grid[i][j] = border_char;
             } else if (j < border || j >= cols - border) {
                 grid[i][j] = border_char;
@@ -103,7 +105,7 @@ int day04() {
     // Part 1
     // ---
     long long part1 = 0;
-    for(int i = 0; i < rows; i++) {
+    for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             if (can_be_removed(rows, cols, grid, i, j)) {
                 part1 += 1;
@@ -123,8 +125,7 @@ int day04() {
     }
 
     fclose(fptr);
-    printf("\n -- Part 1: %lld", part1); // 1502 correct 
+    printf("\n -- Part 1: %lld", part1); // 1502 correct
     printf("\n -- Part 2: %lld", part2); // 9083 correct
     return 0;
 }
-

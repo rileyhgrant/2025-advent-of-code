@@ -5,6 +5,7 @@ My solutions to [Advent of Code](https://adventofcode.com) (AoC) 2025 in C
 
 - [make](https://www.gnu.org/software/make/)
 - [clang](https://clang.llvm.org)
+- [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
 
 ## Input
 

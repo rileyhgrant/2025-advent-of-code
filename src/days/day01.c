@@ -2,7 +2,7 @@
 #include <stdlib.h>
 FILE *fptr;
 
-int day01() 
+int day01()
 {
     int size = 30;
     char buff[size];
@@ -23,8 +23,8 @@ int day01()
         char dir = buff[0];
         int num = atoi(buff + 1);
 
-        spins = num / dial; 
-        remain = num % dial; 
+        spins = num / dial;
+        remain = num % dial;
 
         parttwo = parttwo + spins;
 
@@ -42,7 +42,7 @@ int day01()
                     curr = curr + 100;
                 }
             }
-            
+
         } else if (buff[0] == 'R') {
 
             if (remain > (100 - curr) && curr != 0) {
@@ -59,11 +59,10 @@ int day01()
         if (curr == 0) {
             zeroes = zeroes + 1;
         }
-
     }
 
     fclose(fptr);
-    printf("\n -- Part 1: %d", zeroes); // 1071 correct
+    printf("\n -- Part 1: %d", zeroes);           // 1071 correct
     printf("\n -- Part 2: %d", zeroes + parttwo); // 6700 correct
     return 0;
 }

@@ -3,6 +3,8 @@ CFLAGS = -std=c11 -Wall -Wextra -I src/days
 SRCS = src/main.c $(wildcard src/days/*.c)
 TARGET = bin/a.out
 
+.PHONY: all clean run debug format
+
 all: $(TARGET)
 
 $(TARGET): $(SRCS)
@@ -11,7 +13,7 @@ $(TARGET): $(SRCS)
 asan: CFLAGS += -fsanitize=address -g -fno-omit-frame-pointer
 asan: clean $(TARGET)
 
-run: $(TARGET)
+run: format $(TARGET)
 	./$(TARGET) $(day)
 
 clean:
@@ -19,3 +21,7 @@ clean:
 
 debug:
 	@echo "Files found: $(SRCS)"
+
+format:
+	@echo "Formatting source files..."
+	find src -name "*.c" -o -name "*.h" | xargs clang-format -i
