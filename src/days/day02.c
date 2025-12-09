@@ -122,11 +122,7 @@ int day02() {
     }
 
     fclose(fptr);
-
-    printf("\n\nDay 02: \n-----");
-    printf("\n  Part 1: %lld", solution);  // 19128774598 correct
-    printf("\n  Part 2: %lld", solution2); // 21932258645 correct
-    printf("\n");
-
+    printf("\n -- Part 1: %lld", solution);  // 19128774598 correct
+    printf("\n -- Part 2: %lld", solution2); // 21932258645 correct
     return 0;
 }

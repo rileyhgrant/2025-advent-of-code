@@ -166,14 +166,9 @@ int day07() {
 
 
     fclose(fptr);
-
-    printf("\n\nDay 02: \n-----");
-    printf("\n  Part 1: %lld", *part1); // 1602 correct
-    printf("\n  Part 2: %lld", part2);  // 135656430050438 correct
-    printf("\n");
-
+    printf("\n -- Part 1: %lld", *part1); // 1602 correct
+    printf("\n -- Part 2: %lld", part2);  // 135656430050438 correct
     free(part1);
-    
     return 0;
 }
 

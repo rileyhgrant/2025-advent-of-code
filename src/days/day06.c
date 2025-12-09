@@ -18,7 +18,6 @@ int day06() {
     char buffer[line_len];
 
     char* input_path = "./input/day06.txt";
-    // char* input_path = "./input/day06_test.txt";
     fptr = fopen(input_path, "r");
 
     int line_chars;
@@ -144,12 +143,8 @@ int day06() {
     }
 
     fclose(fptr);
-
-    printf("\n\nDay 02: \n-----");
-    printf("\n  Part 1: %lld", part1);  // 5784380717354 correct
-    printf("\n  Part 2: %lld", part2);  // 7996218225744 correct
-    printf("\n");
-
+    printf("\n -- Part 1: %lld", part1);  // 5784380717354 correct
+    printf("\n -- Part 2: %lld", part2);  // 7996218225744 correct
     return 0;
 }
 

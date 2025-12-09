@@ -144,14 +144,8 @@ int day09() {
         }
     }
 
-
-
     fclose(fptr);
-
-    printf("\n\nDay 09: \n-----");
-    printf("\n  Part 1: %lld", part1); // 4774877510 correct
-    printf("\n  Part 2: %lld", part2); // 1560475800 correct 
-    printf("\n");
-
+    printf("\n -- Part 1: %lld", part1); // 4774877510 correct
+    printf("\n -- Part 2: %lld", part2); // 1560475800 correct 
     return 0;
 }

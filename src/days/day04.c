@@ -122,13 +122,9 @@ int day04() {
         part2 += removed;
     }
 
-
-
-    printf("\n\nDay 04: \n-----");
-    printf("\n  Part 1: %lld", part1); // 1502 correct 
-    printf("\n  Part 2: %lld", part2); // 9083 correct
-    printf("\n");
-
+    fclose(fptr);
+    printf("\n -- Part 1: %lld", part1); // 1502 correct 
+    printf("\n -- Part 2: %lld", part2); // 9083 correct
     return 0;
 }
 

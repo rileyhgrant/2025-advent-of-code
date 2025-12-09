@@ -206,12 +206,8 @@ int day08() {
     }
 
     fclose(fptr);
-
-    printf("\n\nDay 08: \n-----");
-    printf("\n  Part 1: %lld", part1); // 175500 - correct
-    printf("\n  Part 2: %lld", part2); // 6934702555 - correct 
-    printf("\n");
-
+    printf("\n -- Part 1: %lld", part1); // 175500 - correct
+    printf("\n -- Part 2: %lld", part2); // 6934702555 - correct 
     return 0;
 }
 
