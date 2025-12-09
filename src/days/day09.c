@@ -1,25 +1,25 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 FILE *fptr;
 
-
-bool line_intersects_box(int blx, int bly, int bgx, int bgy, int lx1, int ly1, int lx2, int ly2) {
+bool line_intersects_box(int blx, int bly, int bgx, int bgy, int lx1, int ly1,
+                         int lx2, int ly2)
+{
     int llx = lx1 < lx2 ? lx1 : lx2;
     int lgx = lx1 >= lx2 ? lx1 : lx2;
     int lly = ly1 < ly2 ? ly1 : ly2;
     int lgy = ly1 >= ly2 ? ly1 : ly2;
 
     if (llx == lgx) {
-        if (llx > blx && llx < bgx) { 
-             if (lly < bgy && lgy > bly) {
+        if (llx > blx && llx < bgx) {
+            if (lly < bgy && lgy > bly) {
                 return true;
             }
         }
-    } 
-    else if (lly == lgy) {
-        if (lly > bly && lly < bgy) { 
+    } else if (lly == lgy) {
+        if (lly > bly && lly < bgy) {
             if (llx < bgx && lgx > blx) {
                 return true;
             }
@@ -29,11 +29,11 @@ bool line_intersects_box(int blx, int bly, int bgx, int bgy, int lx1, int ly1, i
     return false;
 }
 
-
-bool ray_crosses_line(int cx, int cy, int lx1, int ly1, int lx2, int ly2) {
+bool ray_crosses_line(int cx, int cy, int lx1, int ly1, int lx2, int ly2)
+{
     if (ly1 - ly2 == 0) {
         return false;
-    } 
+    }
 
     int lly = ly1 < ly2 ? ly1 : ly2;
     int lgy = ly1 >= ly2 ? ly1 : ly2;
@@ -43,21 +43,20 @@ bool ray_crosses_line(int cx, int cy, int lx1, int ly1, int lx2, int ly2) {
     return (line_is_to_right && line_would_be_crossed_y);
 }
 
-
-
-int day09() {
+int day09()
+{
     int line_len = 30;
     char buffer[line_len];
-    
-    char* input_path = "./input/day09.txt";
+
+    char *input_path = "./input/day09.txt";
     fptr = fopen(input_path, "r");
 
     int rows = 0;
     int cols;
     int array[500][2];
 
-    while(fgets(buffer, line_len, fptr)) {
-        char* innerPtr;
+    while (fgets(buffer, line_len, fptr)) {
+        char *innerPtr;
         buffer[strcspn(buffer, "\n")] = '\0';
         int first = atoi(strtok_r(buffer, ",", &innerPtr));
         int second = atoi(strtok_r(NULL, ",", &innerPtr));
@@ -68,7 +67,7 @@ int day09() {
     }
 
     int lines[rows][4];
-    for(int i = 0; i < rows; i++) {
+    for (int i = 0; i < rows; i++) {
         int ax = array[i][0];
         int ay = array[i][1];
 
@@ -89,18 +88,18 @@ int day09() {
 
     long long part1 = 0;
     long long part2 = 0;
-    for(int i = 0; i < rows; i++) {
+    for (int i = 0; i < rows; i++) {
         int ax = array[i][0];
         int ay = array[i][1];
 
-        for(int j = 0; j < rows; j++) {
-            if(i != j) {
+        for (int j = 0; j < rows; j++) {
+            if (i != j) {
                 int bx = array[j][0];
                 int by = array[j][1];
 
                 long long x_delta = (long long)(abs(ax - bx) + 1);
                 long long y_delta = (long long)(abs(ay - by) + 1);
-                long long result = x_delta * y_delta; 
+                long long result = x_delta * y_delta;
 
                 if (result > part1) {
                     part1 = result;
@@ -119,13 +118,14 @@ int day09() {
                     int cy = ((bgy - bly) / 2) + bly;
 
                     int cross_count = 0;
-                    while(k < rows && no_intersects == true) {
+                    while (k < rows && no_intersects == true) {
                         int lx1 = lines[k][0];
                         int ly1 = lines[k][1];
                         int lx2 = lines[k][2];
                         int ly2 = lines[k][3];
 
-                        if (line_intersects_box(blx, bly, bgx, bgy, lx1, ly1, lx2, ly2)) {
+                        if (line_intersects_box(blx, bly, bgx, bgy, lx1, ly1,
+                                                lx2, ly2)) {
                             no_intersects = false;
                         }
 
@@ -146,6 +146,6 @@ int day09() {
 
     fclose(fptr);
     printf("\n -- Part 1: %lld", part1); // 4774877510 correct
-    printf("\n -- Part 2: %lld", part2); // 1560475800 correct 
+    printf("\n -- Part 2: %lld", part2); // 1560475800 correct
     return 0;
 }

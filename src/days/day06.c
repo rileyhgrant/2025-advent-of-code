@@ -1,36 +1,32 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 FILE *fptr;
 
+long long add(long long a, long long b) { return a + b; }
 
-long long add(long long a, long long b) {
-    return a + b;
-}
+long long multiply(long long a, long long b) { return a * b; }
 
-long long multiply(long long a, long long b) {
-    return a * b;
-}
-
-int day06() {
+int day06()
+{
     int line_len = 4000;
     char buffer[line_len];
 
-    char* input_path = "./input/day06.txt";
+    char *input_path = "./input/day06.txt";
     fptr = fopen(input_path, "r");
 
     int line_chars;
     int rows = 0;
     int cols;
-    char* token;
-    while(fgets(buffer, line_len, fptr)) {
+    char *token;
+    while (fgets(buffer, line_len, fptr)) {
         cols = 0;
         buffer[strcspn(buffer, "\n")] = '\0';
         line_chars = strlen(buffer);
-        char* innerPtr;
+        char *innerPtr;
         token = strtok_r(buffer, " ", &innerPtr);
-        while(token != NULL) {
+        while (token != NULL) {
             token = strtok_r(NULL, " ", &innerPtr);
             cols++;
         }
@@ -40,14 +36,14 @@ int day06() {
     rewind(fptr);
     long long grid[rows][cols];
 
-    for(int i = 0; i < rows; i++) {
+    for (int i = 0; i < rows; i++) {
         fgets(buffer, line_len, fptr);
         buffer[strcspn(buffer, "\n")] = '\0';
 
-        char* innerPtr2;
+        char *innerPtr2;
         token = strtok_r(buffer, " ", &innerPtr2);
         int j = 0;
-        while(token != NULL) {
+        while (token != NULL) {
             if (*token == '*') {
                 grid[i][j] = -1;
             } else if (*token == '+') {
@@ -61,16 +57,15 @@ int day06() {
         }
     }
 
-
     // Part 1
     // ---
     long long part1 = 0;
-  
+
     typedef long long (*Operation)(long long, long long);
     Operation oper;
 
-    for(int j = 0; j < cols; j++) {
-        long long curr;  
+    for (int j = 0; j < cols; j++) {
+        long long curr;
         long long op = grid[rows - 1][j];
         if (op == -1) {
             curr = 1;
@@ -82,7 +77,7 @@ int day06() {
             return 1;
         }
 
-        for(int i = 0; i < rows - 1; i++) {
+        for (int i = 0; i < rows - 1; i++) {
             curr = oper(curr, grid[i][j]);
         }
 
@@ -93,9 +88,9 @@ int day06() {
     rewind(fptr);
     long long part2 = 0;
 
-    char* array[rows];
+    char *array[rows];
     int i = 0;
-    while(i < rows && fgets(buffer, line_len, fptr)) {
+    while (i < rows && fgets(buffer, line_len, fptr)) {
         buffer[strcspn(buffer, "\n")] = '\0';
         array[i] = strdup(buffer);
         if (array[i] == NULL) {
@@ -107,9 +102,9 @@ int day06() {
 
     long long vals[rows - 1];
     int index = 0;
-    for(int col = line_chars; col >= 0; col--) {
+    for (int col = line_chars; col >= 0; col--) {
         long long curr_val = -1;
-        for(int row = 0; row < rows; row++) {
+        for (int row = 0; row < rows; row++) {
             if (row == rows - 1 && curr_val > 0) {
                 vals[index] = curr_val;
                 index++;
@@ -117,20 +112,20 @@ int day06() {
             char v = array[row][col];
             if (v == '+') {
                 long long this_sum = 0;
-                for(int m = 0; m < index; m++) {
+                for (int m = 0; m < index; m++) {
                     this_sum = add(this_sum, vals[m]);
                 }
                 part2 += this_sum;
                 index = 0;
-            } else if (v == '*') { 
+            } else if (v == '*') {
                 long long this_prod = 1;
-                for(int m = 0; m < index; m++) {
+                for (int m = 0; m < index; m++) {
                     this_prod = multiply(this_prod, vals[m]);
                 }
                 part2 += this_prod;
                 index = 0;
             } else if (v == ' ' || v == '\0') {
-                // PASS no value 
+                // PASS no value
             } else {
                 long long digit = (long long)v - '0';
                 if (curr_val == -1) {
@@ -143,8 +138,7 @@ int day06() {
     }
 
     fclose(fptr);
-    printf("\n -- Part 1: %lld", part1);  // 5784380717354 correct
-    printf("\n -- Part 2: %lld", part2);  // 7996218225744 correct
+    printf("\n -- Part 1: %lld", part1); // 5784380717354 correct
+    printf("\n -- Part 2: %lld", part2); // 7996218225744 correct
     return 0;
 }
-

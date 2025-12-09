@@ -1,19 +1,19 @@
+#include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
-#include <math.h>
 FILE *fptr;
-
 
 #define MAX_ENTRIES 1000 * 1000
 
 typedef struct {
     int key;
-    char* value;
+    char *value;
 } KeyValuePair;
 
-int compare_data_rows(const void *a, const void *b) {
+int compare_data_rows(const void *a, const void *b)
+{
     const KeyValuePair *oA = (const KeyValuePair *)a;
     const KeyValuePair *oB = (const KeyValuePair *)b;
 
@@ -23,20 +23,25 @@ int compare_data_rows(const void *a, const void *b) {
     if (oA->key < oB->key) {
         return -1;
     }
-    
+
     return 0;
 }
 
-int compare_int(const void* a, const void* b) {
-    int ia = * ((int*)a);
-    int ib = * ((int*)b);
+int compare_int(const void *a, const void *b)
+{
+    int ia = *((int *)a);
+    int ib = *((int *)b);
 
-    if ( ia == ib ) return 0;
-    else if ( ia < ib ) return -1;
-    else return 1;
+    if (ia == ib)
+        return 0;
+    else if (ia < ib)
+        return -1;
+    else
+        return 1;
 }
 
-int get_3d_distance(int x1, int x2, int y1, int y2, int z1, int z2) {
+int get_3d_distance(int x1, int x2, int y1, int y2, int z1, int z2)
+{
     float inner = pow((x1 - x2), 2) + pow((y1 - y2), 2) + pow((z1 - z2), 2);
     float val = sqrt(inner);
     return val;
@@ -44,29 +49,32 @@ int get_3d_distance(int x1, int x2, int y1, int y2, int z1, int z2) {
 
 static KeyValuePair data_table[MAX_ENTRIES];
 
-int populate_data_table(int rows, int cols, int grid[rows][cols]) {
+int populate_data_table(int rows, int cols, int grid[rows][cols])
+{
     int x1, y1, z1;
     int x2, y2, z2;
 
     int k = 0;
 
-    for(int i = 0; i < rows; i++) {
+    for (int i = 0; i < rows; i++) {
         x1 = grid[i][0];
         y1 = grid[i][1];
         z1 = grid[i][2];
 
-        for(int j = 0; j < rows; j++) {
-            if(j != i) {
+        for (int j = 0; j < rows; j++) {
+            if (j != i) {
                 x2 = grid[j][0];
                 y2 = grid[j][1];
                 z2 = grid[j][2];
 
                 int distance = get_3d_distance(x1, x2, y1, y2, z1, z2);
 
-                int required_size = snprintf(NULL, 0, "%d,%d,%d-%d,%d,%d", x1, y1, z1, x2, y2, z2);
+                int required_size = snprintf(NULL, 0, "%d,%d,%d-%d,%d,%d", x1,
+                                             y1, z1, x2, y2, z2);
                 char *val = (char *)malloc(required_size + 1);
                 if (val != NULL) {
-                    snprintf(val, required_size + 1, "%d,%d,%d-%d,%d,%d", x1, y1, z1, x2, y2, z2);
+                    snprintf(val, required_size + 1, "%d,%d,%d-%d,%d,%d", x1,
+                             y1, z1, x2, y2, z2);
                 } else {
                     fprintf(stderr, "Memory allocation failed!\n");
                 }
@@ -79,18 +87,18 @@ int populate_data_table(int rows, int cols, int grid[rows][cols]) {
     return k;
 }
 
-
-int day08() {
+int day08()
+{
     int line_len = 100;
     char buffer[line_len];
 
-    char* input_path = "./input/day08.txt";
+    char *input_path = "./input/day08.txt";
     int iters = 1000;
-    
+
     fptr = fopen(input_path, "r");
 
     int rows = 0;
-    while(fgets(buffer, line_len, fptr)) {
+    while (fgets(buffer, line_len, fptr)) {
         buffer[strcspn(buffer, "\n")] = '\0';
         rows++;
     }
@@ -98,13 +106,13 @@ int day08() {
     rewind(fptr);
 
     int grid[rows][3];
-    char* circuits[rows];
-    for(int i = 0; i < rows; i++) {
+    char *circuits[rows];
+    for (int i = 0; i < rows; i++) {
         char *innerPtr;
         fgets(buffer, line_len, fptr);
         buffer[strcspn(buffer, "\n")] = '\0';
 
-        circuits[i] = strdup(buffer); 
+        circuits[i] = strdup(buffer);
 
         int first = atoi(strtok_r(buffer, ",", &innerPtr));
         int second = atoi(strtok_r(NULL, ",", &innerPtr));
@@ -124,49 +132,48 @@ int day08() {
     int num_dashes = 0;
     long long part2;
 
-    while(true) {
-        if(k == iters * 2) {
+    while (true) {
+        if (k == iters * 2) {
             int nums[4];
             nums[0] = 1;
             nums[1] = 1;
             nums[2] = 1;
             nums[3] = 1;
 
-            for(int i = 0; i < rows; i++) {
+            for (int i = 0; i < rows; i++) {
                 int count = 1;
-                for(int n = 0; circuits[i][n] != '\0'; n++) {
-                    if(circuits[i][n] == '&') {
+                for (int n = 0; circuits[i][n] != '\0'; n++) {
+                    if (circuits[i][n] == '&') {
                         count++;
                     }
                 }
                 nums[0] = count;
-                qsort(nums, 4, sizeof(int), compare_int); 
+                qsort(nums, 4, sizeof(int), compare_int);
             }
 
             part1 = (long long)(nums[1] * nums[2] * nums[3]);
         }
 
-
         KeyValuePair kvp = data_table[k];
 
-        char* innerPtr2;
-        char* first = strtok_r(kvp.value, "-", &innerPtr2);
-        char* second = strtok_r(NULL, "-", &innerPtr2);
+        char *innerPtr2;
+        char *first = strtok_r(kvp.value, "-", &innerPtr2);
+        char *second = strtok_r(NULL, "-", &innerPtr2);
 
         int first_in;
         int second_in;
 
-        for(int i = 0; i < rows; i++) {
-            char* innerPtr3;
+        for (int i = 0; i < rows; i++) {
+            char *innerPtr3;
 
-            char* circuitCopy = strdup(circuits[i]);
+            char *circuitCopy = strdup(circuits[i]);
 
-            char* node = strtok_r(circuitCopy, "&", &innerPtr3);
+            char *node = strtok_r(circuitCopy, "&", &innerPtr3);
             while (node != NULL) {
-                if(!strcmp(first, node)) {
+                if (!strcmp(first, node)) {
                     first_in = i;
                 }
-                if(!strcmp(second, node)) {
+                if (!strcmp(second, node)) {
                     second_in = i;
                 }
                 node = strtok_r(NULL, "&", &innerPtr3);
@@ -174,14 +181,15 @@ int day08() {
         }
 
         if (first_in != second_in) {
-            char* first_merge = circuits[first_in];
-            char* second_merge = circuits[second_in];
-            size_t total_len = strlen(first_merge) + strlen("&") + strlen(second_merge) + 1;
+            char *first_merge = circuits[first_in];
+            char *second_merge = circuits[second_in];
+            size_t total_len =
+                strlen(first_merge) + strlen("&") + strlen(second_merge) + 1;
 
             char *new_first = (char *)malloc(total_len);
             if (new_first == NULL) {
                 perror("Panic!");
-                return 1; 
+                return 1;
             }
             strcpy(new_first, first_merge);
             strcat(new_first, "&");
@@ -193,8 +201,8 @@ int day08() {
         }
 
         if (num_dashes == rows - 1) {
-            char* firstPtr;
-            char* secondPtr;
+            char *firstPtr;
+            char *secondPtr;
             long long firstx = atoll(strtok_r(first, ",", &firstPtr));
             long long secondx = atoll(strtok_r(second, ",", &secondPtr));
 
@@ -207,7 +215,6 @@ int day08() {
 
     fclose(fptr);
     printf("\n -- Part 1: %lld", part1); // 175500 - correct
-    printf("\n -- Part 2: %lld", part2); // 6934702555 - correct 
+    printf("\n -- Part 2: %lld", part2); // 6934702555 - correct
     return 0;
 }
-
