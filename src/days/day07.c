@@ -62,7 +62,7 @@ struct nlist *install(char *key, char *val)
 }
 // ---
 
-void print_gr(int rows, int cols, char *grid[rows])
+void print_gr(int rows, char *grid[rows])
 {
     printf("\n");
     for (int i = 0; i < rows; i++) {

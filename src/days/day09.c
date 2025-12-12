@@ -29,7 +29,7 @@ bool line_intersects_box(int blx, int bly, int bgx, int bgy, int lx1, int ly1,
     return false;
 }
 
-bool ray_crosses_line(int cx, int cy, int lx1, int ly1, int lx2, int ly2)
+bool ray_crosses_line(int cx, int cy, int lx1, int ly1, int ly2)
 {
     if (ly1 - ly2 == 0) {
         return false;
@@ -52,7 +52,6 @@ int day09()
     fptr = fopen(input_path, "r");
 
     int rows = 0;
-    int cols;
     int array[500][2];
 
     while (fgets(buffer, line_len, fptr)) {
@@ -62,7 +61,6 @@ int day09()
         int second = atoi(strtok_r(NULL, ",", &innerPtr));
         array[rows][0] = first;
         array[rows][1] = second;
-        cols = strlen(buffer);
         rows++;
     }
 
@@ -129,7 +127,7 @@ int day09()
                             no_intersects = false;
                         }
 
-                        if (ray_crosses_line(cx, cy, lx1, ly1, lx2, ly2)) {
+                        if (ray_crosses_line(cx, cy, lx1, ly1, ly2)) {
                             cross_count++;
                         }
                         k++;
