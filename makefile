@@ -1,6 +1,6 @@
 CC = clang
-CFLAGS = -std=c11 -Wall -Wextra -I src/days
-SRCS = src/main.c $(wildcard src/days/*.c)
+CFLAGS = -std=c11 -Wall -Wextra -I src/days -I src/utils
+SRCS = src/main.c $(wildcard src/days/*.c) $(wildcard src/utils/*.c)
 TARGET = bin/a.out
 
 .PHONY: all clean run debug format
