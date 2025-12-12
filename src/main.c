@@ -12,8 +12,9 @@
 #include "day07.h"
 #include "day08.h"
 #include "day09.h"
+#include "day10.h"
 
-#define TOTAL_DAYS 9
+#define TOTAL_DAYS 12
 
 void run_day(int day)
 {
@@ -46,8 +47,11 @@ void run_day(int day)
     case 9:
         day09();
         break;
+    case 10:
+        day10();
+        break;
     default:
-        printf("Day %d not found", day);
+        printf("\n -- Day %d not yet implemented", day);
         break;
     }
 }
