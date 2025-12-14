@@ -1,3 +1,4 @@
+#include "hashtable.h"
 #include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -63,29 +64,33 @@ Node *get_or_create_node(Graph *graph, char *label)
     return new_node;
 }
 
-void traverse(Graph *graph, Node *node, int num_seen, char *seen[MAX_NODES],
-              long long *part1)
+long long traverse(Graph *graph, Node *this_node, char *end_node_label,
+                   HashTable *memo)
 {
-    for (int i = 0; i < node->to_count; i++) {
-        Node *to_node = node->to_nodes[i];
+    if (strcmp(this_node->label, end_node_label) == 0) {
+        return 1;
+    }
+
+    char *key = strdup(this_node->label);
+
+    if (lookup(memo, key) != NULL) {
+        int toReturn = atoi(lookup(memo, key)->val);
+        return toReturn;
+    }
+
+    long long sum = 0;
+    for (int i = 0; i < this_node->to_count; i++) {
+        Node *to_node = this_node->to_nodes[i];
         char *to_label = to_node->label;
 
-        if (strcmp(to_label, "out") == 0) {
-            (*part1)++;
-            return;
-        }
-
-        // linear search -- bad but hopefully tolerable here
-        for (int j = 0; j < num_seen; j++) {
-            if (strcmp(seen[j], to_label) == 0) {
-                return;
-            }
-        }
-
-        seen[num_seen] = to_label;
-        int new_seen = num_seen + 1;
-        traverse(graph, to_node, new_seen, seen, part1);
+        long long this_result = traverse(graph, to_node, end_node_label, memo);
+        sum += this_result;
     }
+
+    char value[30];
+    sprintf(value, "%lld", sum);
+    install(memo, key, value);
+    return sum;
 }
 
 int day11()
@@ -93,6 +98,9 @@ int day11()
 
     struct timespec start, end;
     timespec_get(&start, TIME_UTC);
+
+    struct timespec start2, end2;
+    timespec_get(&start2, TIME_UTC);
 
     char buffer[BUFFER_SIZE];
     FILE *fptr;
@@ -103,6 +111,9 @@ int day11()
     init_graph(&graph);
 
     Node *start_node;
+    Node *svr_node;
+    Node *fft_node;
+    Node *dac_node;
 
     while (fgets(buffer, BUFFER_SIZE, fptr)) {
         buffer[strcspn(buffer, "\n")] = '\0';
@@ -113,6 +124,18 @@ int day11()
 
         if (strcmp(from_label, "you") == 0) {
             start_node = from_node;
+        }
+
+        if (strcmp(from_label, "svr") == 0) {
+            svr_node = from_node;
+        }
+
+        if (strcmp(from_label, "fft") == 0) {
+            fft_node = from_node;
+        }
+
+        if (strcmp(from_label, "dac") == 0) {
+            dac_node = from_node;
         }
 
         char *token = strtok_r(NULL, " ", &innerPtr);
@@ -129,13 +152,8 @@ int day11()
 
     fclose(fptr);
 
-    long long *part1 = (long long *)malloc(sizeof(long long));
-    *part1 = 0;
-
-    char *seen[MAX_NODES];
-    seen[0] = "you";
-    int num_seen = 1;
-    traverse(&graph, start_node, num_seen, seen, part1);
+    HashTable *p1_memo = create_table(2048);
+    long long part1 = traverse(&graph, start_node, "out", p1_memo);
 
     timespec_get(&end, TIME_UTC);
     long long p1_seconds = end.tv_sec - start.tv_sec;
@@ -143,13 +161,37 @@ int day11()
     double p1_elapsed_s =
         ((p1_seconds * 1000) + (p1_nanoseconds / 1.0e6)) / 1000.0;
 
+    HashTable *svr_to_fft_memo = create_table(2048);
+    long long svr_to_fft = traverse(&graph, svr_node, "fft", svr_to_fft_memo);
+    HashTable *fft_to_dac_memo = create_table(2048);
+    long long fft_to_dac = traverse(&graph, fft_node, "dac", fft_to_dac_memo);
+    HashTable *dac_to_out_memo = create_table(2048);
+    long long dac_to_out = traverse(&graph, dac_node, "out", dac_to_out_memo);
+    long long fft_first = svr_to_fft * fft_to_dac * dac_to_out;
+
+    HashTable *svr_to_dac_memo = create_table(2048);
+    long long svr_to_dac = traverse(&graph, svr_node, "dac", svr_to_dac_memo);
+    HashTable *dac_to_fft_memo = create_table(2048);
+    long long dac_to_fft = traverse(&graph, dac_node, "fft", dac_to_fft_memo);
+    HashTable *fft_to_out_memo = create_table(2048);
+    long long fft_to_out = traverse(&graph, fft_node, "out", fft_to_out_memo);
+    long long dac_first = svr_to_dac * dac_to_fft * fft_to_out;
+
+    long long part2 = fft_first + dac_first;
+
+    timespec_get(&end2, TIME_UTC);
+    long long p2_seconds = end2.tv_sec - start2.tv_sec;
+    long long p2_nanoseconds = end2.tv_nsec - start2.tv_nsec;
+    double p2_elapsed_s =
+        ((p2_seconds * 1000) + (p2_nanoseconds / 1.0e6)) / 1000.0;
+
     printf("\n -- Part 1 (");
     print_formatted_time_11(p1_elapsed_s);
-    printf("): %lld", *part1); // 523 correct
+    printf("): %lld", part1); // 523 correct
 
     printf("\n -- Part 2 (");
-    print_formatted_time_11(p1_elapsed_s);
-    printf("): %lld", -1LL);
+    print_formatted_time_11(p2_elapsed_s);
+    printf("): %lld", part2); // 517315308154944 correct
 
     return 0;
 }
