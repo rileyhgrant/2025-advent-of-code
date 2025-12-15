@@ -36,6 +36,98 @@ void print_binary(int n, int width)
     }
 }
 
+typedef struct {
+    int current_b_value;
+    int history_indices[16];
+    int history_count;
+    int last_index_pressed;
+} Path;
+
+typedef struct {
+    int *button_indices;
+    int button_count;
+} ButtonCombination;
+
+typedef struct {
+    ButtonCombination *combos;
+    int count;
+    int least_button_presses_required;
+} ButtonResult;
+
+int compare_ints(const void *a, const void *b)
+{
+    return (*(int *)a - *(int *)b);
+}
+
+// Get all states that result in goal, in preparation to use this strategy:
+//   https://www.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
+//   from reddit user: https://www.reddit.com/user/tenthmascot/
+ButtonResult get_button_combinations(int b_target, int num_buttons,
+                                     int b_button_array[16])
+{
+    Path *queue = malloc(4096 * sizeof(Path));
+    queue[0] = (Path){
+        .current_b_value = 0,
+        .history_count = 0,
+        .last_index_pressed = -1,
+    };
+
+    int idx = 0;
+    int assigned = 0;
+
+    ButtonCombination temp_results[1024];
+    int num_found = 0;
+    int least_button_pressed_required = 999;
+
+    while (idx <= assigned) {
+
+        Path current_path = queue[idx];
+        idx++;
+
+        if (current_path.current_b_value == b_target) {
+            int *saved_indices =
+                malloc(current_path.history_count * sizeof(int));
+            memcpy(saved_indices, current_path.history_indices,
+                   current_path.history_count * sizeof(int));
+
+            temp_results[num_found].button_indices = saved_indices;
+            temp_results[num_found].button_count = current_path.history_count;
+            if (current_path.history_count < least_button_pressed_required) {
+                least_button_pressed_required = current_path.history_count;
+            }
+            num_found++;
+        } else {
+            for (int i = current_path.last_index_pressed + 1; i < num_buttons;
+                 i++) {
+                int b_button = b_button_array[i];
+                int xor_val = current_path.current_b_value ^ b_button;
+
+                Path new_path = current_path;
+                new_path.current_b_value = xor_val;
+
+                new_path.history_count = current_path.history_count + 1;
+                new_path.history_indices[new_path.history_count - 1] = i;
+                new_path.last_index_pressed = i;
+
+                assigned++;
+                queue[assigned] = new_path;
+            }
+        }
+    }
+
+    ButtonResult result;
+    result.count = num_found;
+    result.combos = malloc(num_found * sizeof(ButtonCombination));
+    for (int i = 0; i < num_found; i++) {
+        result.combos[i] = temp_results[i];
+    }
+    result.least_button_presses_required = least_button_pressed_required;
+
+    free(queue);
+
+    return result;
+}
+
 int day10()
 {
     struct timespec start, end;
@@ -83,46 +175,12 @@ int day10()
             }
         }
 
-        int queue[4096];
-        queue[0] = 0;
+        // Part 1
+        // ---
+        ButtonResult part1_result =
+            get_button_combinations(b_goal, num_buttons, b_buttons);
 
-        int idx = 0;
-        int assigned = 0;
-
-        int seen[1024];
-        memset(seen, -1, sizeof(seen));
-        seen[0] = 0;
-
-        int xor;
-        bool found = false;
-
-        int result = 0;
-
-        while (!found && idx <= assigned) {
-            int current = queue[idx];
-            int current_depth = seen[current];
-
-            int new_depth = current_depth + 1;
-            for (int i = 0; i < num_buttons; i++) {
-                int b_button = b_buttons[i];
-                xor = current ^ b_button;
-
-                if (xor == b_goal) {
-                    found = true;
-                    result = new_depth;
-                    break;
-                }
-
-                if (seen[xor] == -1) {
-                    seen[xor] = new_depth;
-                    assigned++;
-                    queue[assigned] = xor;
-                }
-            }
-            idx++;
-        }
-
-        part1 += result;
+        part1 += part1_result.least_button_presses_required;
     }
 
     fclose(fptr);
