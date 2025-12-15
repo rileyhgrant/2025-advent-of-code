@@ -23,7 +23,7 @@ void print_formatted_time(double seconds)
 
 void print_binary(int n, int width)
 {
-    printf("0b");
+    printf("0b-");
     int start_idx = width - 1;
 
     for (int i = start_idx; i >= 0; i--) {
@@ -96,22 +96,22 @@ ButtonResult get_button_combinations(int b_target, int num_buttons,
                 least_button_pressed_required = current_path.history_count;
             }
             num_found++;
-        } else {
-            for (int i = current_path.last_index_pressed + 1; i < num_buttons;
-                 i++) {
-                int b_button = b_button_array[i];
-                int xor_val = current_path.current_b_value ^ b_button;
+        }
 
-                Path new_path = current_path;
-                new_path.current_b_value = xor_val;
+        for (int i = current_path.last_index_pressed + 1; i < num_buttons;
+             i++) {
+            int b_button = b_button_array[i];
+            int xor_val = current_path.current_b_value ^ b_button;
 
-                new_path.history_count = current_path.history_count + 1;
-                new_path.history_indices[new_path.history_count - 1] = i;
-                new_path.last_index_pressed = i;
+            Path new_path = current_path;
+            new_path.current_b_value = xor_val;
 
-                assigned++;
-                queue[assigned] = new_path;
-            }
+            new_path.history_count = current_path.history_count + 1;
+            new_path.history_indices[new_path.history_count - 1] = i;
+            new_path.last_index_pressed = i;
+
+            assigned++;
+            queue[assigned] = new_path;
         }
     }
 
@@ -128,6 +128,70 @@ ButtonResult get_button_combinations(int b_target, int num_buttons,
     return result;
 }
 
+long long solve_day_10_part_2(int goal_len, int joltages[goal_len],
+                              int num_buttons, int binary_buttons[num_buttons],
+                              int array_buttons[num_buttons][goal_len])
+{
+    bool any_nonzero = false;
+    bool any_negative = false;
+    for (int r = 0; r < goal_len; r++) {
+        if (joltages[r] != 0) {
+            any_nonzero = true;
+        }
+        if (joltages[r] < 0) {
+            any_negative = true;
+        }
+    }
+    if (!any_nonzero) {
+        return 0LL;
+    }
+    if (any_negative) {
+        return 999999LL;
+    }
+
+    unsigned long long int joltage_as_odd_target = 0;
+    for (int i = 0; i < goal_len; i++) {
+        int partial = joltages[i] % 2 == 1 ? 1 : 0;
+        joltage_as_odd_target = (joltage_as_odd_target << 1) + partial;
+    }
+
+    ButtonResult candidates = get_button_combinations(
+        joltage_as_odd_target, num_buttons, binary_buttons);
+
+    long long minimum = 999999LL;
+
+    for (int m = 0; m < candidates.count; m++) {
+        ButtonCombination this_combo = candidates.combos[m];
+        int next_joltages[goal_len];
+        memcpy(next_joltages, joltages, goal_len * sizeof(int));
+
+        for (int n = 0; n < this_combo.button_count; n++) {
+            int *array_button = array_buttons[this_combo.button_indices[n]];
+            for (int o = 0; o < goal_len; o++) {
+                next_joltages[o] = next_joltages[o] - array_button[o];
+            }
+        }
+
+        for (int p = 0; p < goal_len; p++) {
+            next_joltages[p] = next_joltages[p] / 2;
+            if (next_joltages[p] != 0) {
+                any_nonzero = true;
+            }
+        }
+
+        long long recur_result =
+            solve_day_10_part_2(goal_len, next_joltages, num_buttons,
+                                binary_buttons, array_buttons);
+
+        long long this_result = this_combo.button_count + (2 * recur_result);
+        if (this_result < minimum) {
+            minimum = this_result;
+        }
+    }
+
+    return minimum;
+}
+
 int day10()
 {
     struct timespec start, end;
@@ -141,6 +205,7 @@ int day10()
     fptr = fopen(input_path, "r");
 
     long long part1 = 0;
+    long long part2 = 0;
 
     while (fgets(buffer, BUFFER_SIZE, fptr)) {
         char *innerPtr;
@@ -158,20 +223,41 @@ int day10()
             bit = bit * 2;
         }
 
-        // buttons as binary
+        // buttons as binary, and as array
         int num_buttons = 0;
         int b_buttons[16] = {0};
-        int b_button;
-        char *nextToken;
-        while ((nextToken = strtok_r(NULL, " ", &innerPtr)) != NULL) {
-            b_button = 0;
-            if (nextToken[0] == '(') {
-                for (unsigned int i = 1; i < (strlen(nextToken) - 1); i += 2) {
-                    int num = pow(2, (goal_len - 1) - atoi(&nextToken[i]));
-                    b_button += num;
+        int index_buttons[16][goal_len];
+
+        int joltages[goal_len];
+
+        char *next_token;
+        while ((next_token = strtok_r(NULL, " ", &innerPtr)) != NULL) {
+            for (int n = 0; n < goal_len; n++) {
+                index_buttons[num_buttons][n] = 0;
+            }
+
+            int b_button = 0;
+            if (next_token[0] == '(') {
+                for (unsigned int i = 1; i < (strlen(next_token) - 1); i += 2) {
+                    int this_num = atoi(&next_token[i]);
+                    int b_num = pow(2, (goal_len - 1) - this_num);
+                    b_button += b_num;
+                    index_buttons[num_buttons][this_num] = 1;
                 }
+
                 b_buttons[num_buttons] = b_button;
                 num_buttons++;
+            }
+
+            if (next_token[0] == '{') {
+                char *joltagePtr;
+                char *next_joltage = strtok_r(next_token + 1, ",", &joltagePtr);
+                int joltage_count = 0;
+                while (next_joltage != NULL) {
+                    joltages[joltage_count] = atoi(next_joltage);
+                    next_joltage = strtok_r(NULL, ",", &joltagePtr);
+                    joltage_count++;
+                }
             }
         }
 
@@ -181,6 +267,12 @@ int day10()
             get_button_combinations(b_goal, num_buttons, b_buttons);
 
         part1 += part1_result.least_button_presses_required;
+
+        // Part 2
+        // ---
+        long long part2_result = solve_day_10_part_2(
+            goal_len, joltages, num_buttons, b_buttons, index_buttons);
+        part2 += part2_result;
     }
 
     fclose(fptr);
@@ -196,7 +288,7 @@ int day10()
 
     printf("\n -- Part 2 (");
     print_formatted_time(elapsed_s);
-    printf("): %lld", -1LL);
+    printf("): %lld", part2); // 18369 correct
 
     return 0;
 }
